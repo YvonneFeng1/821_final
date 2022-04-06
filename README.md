@@ -3,7 +3,7 @@
 Gloria Gu, Jingya Cheng, Yvonne Feng
 
 
-## BIOSTAT821_final_project:
+## Descrption:
 
 To create the graphical user interface (GUI) as front end by connecting Redis that allows users to interact with electronic devices through graphical icons and audio indicator such as primary notation, instead of text-based user interfaces, typed command labels or text navigation. 
 
