@@ -59,7 +59,6 @@ def del_book(book_key_entry):
     author_list = author[1:-1].split(
         sep=", "
     )  # [1:-1] is used to strip out the bracket
-    print(author_list)
     for author_elem in author_list:
         conn.srem(
             author_elem[1:-1], book_key
