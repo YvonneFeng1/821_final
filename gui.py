@@ -17,8 +17,8 @@ def main():
     root = tkinter.Tk()
     root.title("Library System")
 
-    make_book_frame(root, conn)
-    make_user_frame(root, conn)
+    make_book_frame(root)
+    make_user_frame(root)
     root.mainloop()
     conn.connection_pool.disconnect()
 
@@ -34,8 +34,8 @@ def make_user_frame(root):
     username_entry = ttk.Entry(person_frame, width=8)
     phone_label = ttk.Label(person_frame, text="phone")
     phone_entry = ttk.Entry(person_frame, width=8)
-    self._person_key_label = ttk.Label(person_frame, text="self._person_key")
-    self._person_key_entry = ttk.Entry(person_frame, width=8)
+    person_key_label = ttk.Label(person_frame, text="person_key")
+    person_key_entry = ttk.Entry(person_frame, width=8)
     act_with_book_label = ttk.Label(person_frame, text="Enter the searched book key")
     act_with_book_entry = ttk.Entry(person_frame, width=8)
 
@@ -45,8 +45,8 @@ def make_user_frame(root):
     username_entry.grid(row=0, column=3)
     phone_label.grid(row=1, column=0)
     phone_entry.grid(row=1, column=1)
-    self._person_key_label.grid(row=1, column=2)
-    self._person_key_entry.grid(row=1, column=3)
+    person_key_label.grid(row=1, column=2)
+    person_key_entry.grid(row=1, column=3)
     act_with_book_label.grid(row=4, column=0)
     act_with_book_entry.grid(row=4, column=1)
 
@@ -64,8 +64,8 @@ def make_book_frame(root):
     isbn_entry = ttk.Entry(book_frame, width=8)
     page_number_label = ttk.Label(book_frame, text="page number")
     page_number_entry = ttk.Entry(book_frame, width=8)
-    self._book_key_label = ttk.Label(book_frame, text="self._book_key")
-    self._book_key_entry = ttk.Entry(book_frame, width=8)
+    book_key_label = ttk.Label(book_frame, text="book_key")
+    book_key_entry = ttk.Entry(book_frame, width=8)
 
     title_label.grid(row=0, column=0)
     title_entry.grid(row=0, column=1)
@@ -75,5 +75,9 @@ def make_book_frame(root):
     isbn_entry.grid(row=1, column=1)
     page_number_label.grid(row=1, column=2)
     page_number_entry.grid(row=1, column=3)
-    self._book_key_label.grid(row=2, column=1)
-    self._book_key_entry.grid(row=2, column=2)
+    book_key_label.grid(row=2, column=1)
+    book_key_entry.grid(row=2, column=2)
+
+
+if __name__ == "__main__":
+    main()

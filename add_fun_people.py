@@ -113,6 +113,7 @@ def edit_person(
 
 
 def search_person(name_entry: ttk.Entry, username_entry: ttk.Entry):
+    """Search person by name and username."""
     name = name_entry.get()
     username = username_entry.get()
     print("search for: " + ", ".join([name, username]))
