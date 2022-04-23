@@ -25,15 +25,6 @@ class Person:
         conn.sadd(str(phone), self._person_key)
         conn.incr("PID", 1)
 
-    def __del__(self):
-        """Delete person."""
-        name = conn.hget(self._person_key, "name").decode("utf-8")
-        conn.srem(name, self._person_key)
-        username = conn.hget(self._person_key, "username").decode("utf-8")
-        conn.srem(username, self._person_key)
-        phone = conn.hget(self._person_key, "phone").decode("utf-8")
-        conn.srem(phone, self._person_key)
-
     @property
     def person_key(self):
         """Getter of self._person_key."""

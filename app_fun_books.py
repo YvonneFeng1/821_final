@@ -41,8 +41,6 @@ def add_book(
     # clear text in entries
     clear_entries([title_entry, author_entry, isbn_entry, page_number_entry])
     print(book.book_key, "added")
-
-    conn.incr("BID", 1)
     return
 
 
@@ -50,7 +48,7 @@ def del_book(book_key_entry):
     """Delete the book given the book key."""
     # check if book_key is in books
     book_key = book_key_entry.get()
-    if not conn.sismember("books", book_key):
+    if not conn.sismember("book", book_key):
         print(book_key, "is not in the library")
         book_key_entry.delete(0, "end")
         return

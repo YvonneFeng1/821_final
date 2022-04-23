@@ -32,20 +32,6 @@ class Book:
         conn.sadd(str(page_number), self._book_key)
         conn.incr("BID", 1)
 
-    def __del__(self):
-        """Delete the book instance."""
-        title = conn.hget(self._book_key, "title").decode("utf-8")
-        conn.srem(title, self._book_key)
-        author = conn.hget(self._book_key, "author").decode("utf-8")
-        author_list = author.split(sep=", ")
-        for author_elem in author_list:
-            conn.srem(author_elem, self._book_key)
-        isbn = conn.hget(self._book_key, "isbn").decode("utf-8")
-        conn.srem(isbn, self._book_key)
-        page_number = conn.hget(self._book_key, "pageNumber").decode("utf-8")
-        conn.srem(page_number, self._book_key)
-        conn.srem("books", self._book_key)
-
     @property
     def book_key(self):
         """Getter of self._book_key."""
