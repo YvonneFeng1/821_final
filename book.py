@@ -24,7 +24,7 @@ class Book:
         )  # 1 means availability, 0 means not available
         conn.hset(self._book_key, "borrower", "none")
 
-        conn.sadd("books", self._book_key)
+        conn.sadd("books_set", self._book_key)
         conn.sadd(title, self._book_key)
         for author_elem in authors:
             conn.sadd(author_elem, self._book_key)

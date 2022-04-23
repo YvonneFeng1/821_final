@@ -82,6 +82,78 @@ def del_book(book_key_entry):
     return
 
 
+def edit_book(
+    title_entry: ttk.Entry,
+    author_entry: ttk.Entry,
+    isbn_entry: ttk.Entry,
+    page_number_entry: ttk.Entry,
+    book_key_entry: ttk.Entry,
+):
+    """Edit book information based on given information."""
+    book_key = book_key_entry.get()
+    if not conn.sismember("books", book_key):
+        print(book_key, "is not in the library, so cannot edit anything")
+        book_key_entry.delete(0, "end")
+        return
+
+    prev_title = conn.hget(book_key, "title").decode("utf-8")  # type: ignore
+    prev_author = conn.hget(book_key, "author").decode("utf-8")  # type: ignore
+    prev_author_list = prev_author.split(", ")
+    prev_isbn = conn.hget(book_key, "isbn").decode("utf-8")  # type: ignore
+    prev_page_number = conn.hget(book_key, "pageNumber").decode("utf-8")  # type: ignore
+
+    conn.srem(prev_title, book_key)
+    for prev_author_elem in prev_author_list:
+        conn.srem(prev_author_elem, book_key)
+    conn.srem(prev_isbn, book_key)
+    conn.srem(prev_page_number, book_key)
+
+    title = title_entry.get()
+    author = author_entry.get()
+    author_list = author.split(sep=", ")
+    isbn = isbn_entry.get()
+    page_number = page_number_entry.get()
+
+    if title == "" or author == "" or page_number == "" or isbn == "":
+        print("you missed some information; plz try again")
+        clear_entries(
+            [title_entry, author_entry, isbn_entry, page_number_entry, book_key_entry]
+        )
+        return
+    try:
+        int(page_number)
+    except ValueError:
+        print("incorrect value for page number; plz try again")
+        clear_entries(
+            [title_entry, author_entry, isbn_entry, page_number_entry, book_key_entry]
+        )
+        return
+    if int(page_number) <= 0:
+        print("incorrect page number; it should be positive")
+        clear_entries(
+            [title_entry, author_entry, isbn_entry, page_number_entry, book_key_entry]
+        )
+        return
+
+    conn.hset(book_key, "title", title)
+    conn.hset(book_key, "author", author)
+    conn.hset(book_key, "isbn", isbn)
+    conn.hset(book_key, "pageNumber", page_number)
+
+    conn.sadd(title, book_key)
+    for author_elem in author_list:
+        conn.sadd(author_elem, book_key)
+    conn.sadd(isbn, book_key)
+    conn.sadd(page_number, book_key)
+
+    # clear entries
+    clear_entries(
+        [title_entry, author_entry, isbn_entry, page_number_entry, book_key_entry]
+    )
+    print(book_key, "edited")
+    return
+
+
 def search_book(title_entry: ttk.Entry, author_entry: ttk.Entry, isbn_entry: ttk.Entry):
     """Search book based on the given info."""
     title = title_entry.get()
