@@ -20,7 +20,7 @@ def main():
     conn.connection_pool.disconnect()
 
 
-def make_user_frame(root, client):
+def make_user_frame(root, conn):
     person_frame = ttk.Frame(root, padding=20)
     person_frame.grid(row=1)
     # input entries
@@ -47,7 +47,7 @@ def make_user_frame(root, client):
     act_with_book_entry.grid(row=4, column=1)
 
 
-def make_book_frame(root, client):
+def make_book_frame(root, conn):
     book_frame = ttk.Frame(root, padding=20)
     book_frame.grid(row=0)
     # input entries
@@ -59,8 +59,8 @@ def make_book_frame(root, client):
     isbn_entry = ttk.Entry(book_frame, width=8)
     page_number_label = ttk.Label(book_frame, text="page number")
     page_number_entry = ttk.Entry(book_frame, width=8)
-    book_key_label = ttk.Label(book_frame, text="book_key")
-    book_key_entry = ttk.Entry(book_frame, width=8)
+    self._book_key_label = ttk.Label(book_frame, text="self._book_key")
+    self._book_key_entry = ttk.Entry(book_frame, width=8)
 
     title_label.grid(row=0, column=0)
     title_entry.grid(row=0, column=1)
@@ -70,5 +70,5 @@ def make_book_frame(root, client):
     isbn_entry.grid(row=1, column=1)
     page_number_label.grid(row=1, column=2)
     page_number_entry.grid(row=1, column=3)
-    book_key_label.grid(row=2, column=1)
-    book_key_entry.grid(row=2, column=2)
+    self._book_key_label.grid(row=2, column=1)
+    self._book_key_entry.grid(row=2, column=2)
