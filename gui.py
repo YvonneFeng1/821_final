@@ -2,18 +2,13 @@
 
 import tkinter
 from tkinter import ttk
-from redis import Redis
+
+from numpy import sort
+from db import conn
 
 
 def main():
     """Build main."""
-    # connect to redis
-    conn = Redis()
-    init_bid = 1 if conn.get("BID") is None else int(conn.get("BID").decode("utf-8"))
-    init_pid = 1 if conn.get("PID") is None else int(conn.get("PID").decode("utf-8"))
-    conn.set("BID", init_bid)
-    conn.set("PID", init_pid)
-
     root = tkinter.Tk()
     root.title("Library System")
 
@@ -78,6 +73,34 @@ def make_book_frame(root):
     book_key_label.grid(row=2, column=1)
     book_key_entry.grid(row=2, column=2)
 
+    # buttons
+    add_book_button = ttk.Button(book_frame, text="add book")
+    del_book_button = ttk.Button(book_frame, text="delete book")
+    edit_book_button = ttk.Button(book_frame, text="edit book")
+    search_book_button = ttk.Button(book_frame, text="search book")
 
-if __name__ == "__main__":
-    main()
+    add_book_button.grid(row=3, column=0)
+    del_book_button.grid(row=3, column=1)
+    edit_book_button.grid(row=3, column=2)
+    search_book_button.grid(row=3, column=3)
+
+    sort_label = ttk.Label(book_frame, text="sort method:")
+    sort_label.grid(row=4, column=0)
+    sort_method_grid_complex = [
+        ("title", 4, 1),
+        ("author", 4, 2),
+        ("isbn", 5, 1),
+        ("pageNumber", 5, 2),
+    ]
+    v = tkinter.StringVar()
+
+    def show_choice() -> None:
+        """Radio-button help command."""
+        sort_by = v.get()
+        print(sort_by)
+
+    for (method, row, col) in sort_method_grid_complex:
+        radio_button = ttk.Radiobutton(
+            book_frame, text=method, value=method, variable=v, command=show_choice
+        )
+        radio_button.grid(row=row, column=col)
