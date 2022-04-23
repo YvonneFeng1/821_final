@@ -36,8 +36,3 @@ class Book:
     def book_key(self):
         """Getter of self._book_key."""
         return self._book_key
-
-
-if __name__ == "__main__":
-    book0 = Book("title2", "isbn2", ["a", "b"], 1)
-    book1 = Book("title3", "isbn3", ["a", "b"], 1)

@@ -29,10 +29,3 @@ class Person:
     def person_key(self):
         """Getter of self._person_key."""
         return self._person_key
-
-
-if __name__ == "__main__":
-    person = Person("ok", "okk", 1234)
-    person2 = Person("ok2", "okk2", 12342)
-    del person2
-    print(conn.hgetall("person:2"))

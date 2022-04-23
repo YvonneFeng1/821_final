@@ -2,8 +2,8 @@
 
 import tkinter
 from tkinter import ttk
-
-from numpy import sort
+import app_fun_books
+import app_fun_person
 from db import conn
 
 
@@ -84,6 +84,19 @@ def make_book_frame(root):
     edit_book_button.grid(row=3, column=2)
     search_book_button.grid(row=3, column=3)
 
+    add_book_button["command"] = lambda: app_fun_books.add_book(
+        title_entry, author_entry, isbn_entry, page_number_entry
+    )
+    del_book_button["command"] = lambda: app_fun_books.del_book(book_key_entry)
+    edit_book_button["command"] = lambda: app_fun_books.edit_book(
+        title_entry, author_entry, isbn_entry, page_number_entry, book_key_entry
+    )
+    search_book_button["command"] = lambda: app_fun_books.search_book(
+        title_entry, author_entry, isbn_entry
+    )
+
+    # radio buttons for sorting
+
     sort_label = ttk.Label(book_frame, text="sort method:")
     sort_label.grid(row=4, column=0)
     sort_method_grid_complex = [
@@ -97,7 +110,7 @@ def make_book_frame(root):
     def show_choice() -> None:
         """Radio-button help command."""
         sort_by = v.get()
-        print(sort_by)
+        app_fun_books.sort_books(sort_by)
 
     for (method, row, col) in sort_method_grid_complex:
         radio_button = ttk.Radiobutton(

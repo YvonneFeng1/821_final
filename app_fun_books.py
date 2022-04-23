@@ -48,7 +48,7 @@ def del_book(book_key_entry):
     """Delete the book given the book key."""
     # check if book_key is in books
     book_key = book_key_entry.get()
-    if not conn.sismember("book", book_key):
+    if not conn.sismember("books_set", book_key):
         print(book_key, "is not in the library")
         book_key_entry.delete(0, "end")
         return
@@ -56,23 +56,28 @@ def del_book(book_key_entry):
     title = conn.hget(book_key, "title").decode("utf-8")
     conn.srem(title, book_key)
     author = conn.hget(book_key, "author").decode("utf-8")
-    author_list = author.split(sep=", ")
+    author_list = author[1:-1].split(
+        sep=", "
+    )  # [1:-1] is used to strip out the bracket
+    print(author_list)
     for author_elem in author_list:
-        conn.srem(author_elem, book_key)
+        conn.srem(
+            author_elem[1:-1], book_key
+        )  # [1:-1] is used to strip out the quotation mark
     isbn = conn.hget(book_key, "isbn").decode("utf-8")
     conn.srem(isbn, book_key)
     page_number = conn.hget(book_key, "pageNumber").decode("utf-8")
     conn.srem(page_number, book_key)
-    conn.srem("books", book_key)
+    conn.srem("books_set", book_key)
 
-    # remove the book from the borrower book set
-    borrower_person_key = conn.hget(book_key, "borrower").decode("utf-8")
-    print(borrower_person_key)
-    if borrower_person_key != "none":
-        borrower_person_books_set_key = (
-            conn.hget(borrower_person_key, "username").decode("utf-8") + ":books"
-        )
-        conn.srem(borrower_person_books_set_key, book_key)
+    # # remove the book from the borrower book set
+    # borrower_person_key = conn.hget(book_key, "borrower").decode("utf-8")
+    # print(borrower_person_key)
+    # if borrower_person_key != "none":
+    #     borrower_person_books_set_key = (
+    #         conn.hget(borrower_person_key, "username").decode("utf-8") + ":books"
+    #     )
+    #     conn.srem(borrower_person_books_set_key, book_key)
 
     conn.delete(book_key)
     print(book_key, "deleted")
@@ -89,7 +94,7 @@ def edit_book(
 ):
     """Edit book information based on given information."""
     book_key = book_key_entry.get()
-    if not conn.sismember("books", book_key):
+    if not conn.sismember("books_set", book_key):
         print(book_key, "is not in the library, so cannot edit anything")
         book_key_entry.delete(0, "end")
         return
@@ -189,7 +194,7 @@ def search_book(title_entry: ttk.Entry, author_entry: ttk.Entry, isbn_entry: ttk
 def sort_books(sort_by: str) -> None:
     """Sort the books in the system by a field."""
     print(f"sorting by {sort_by}")
-    sorted_books = conn.sort("books", by=f"*->{sort_by}", alpha=True)
+    sorted_books = conn.sort("books_set", by=f"*->{sort_by}", alpha=True)
     for book in sorted_books:
         print(book, conn.hgetall(book))
     return
