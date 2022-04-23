@@ -30,8 +30,8 @@ def make_user_frame(root, conn):
     username_entry = ttk.Entry(person_frame, width=8)
     phone_label = ttk.Label(person_frame, text="phone")
     phone_entry = ttk.Entry(person_frame, width=8)
-    person_key_label = ttk.Label(person_frame, text="person_key")
-    person_key_entry = ttk.Entry(person_frame, width=8)
+    self._person_key_label = ttk.Label(person_frame, text="self._person_key")
+    self._person_key_entry = ttk.Entry(person_frame, width=8)
     act_with_book_label = ttk.Label(person_frame, text="Enter the searched book key")
     act_with_book_entry = ttk.Entry(person_frame, width=8)
 
@@ -41,8 +41,8 @@ def make_user_frame(root, conn):
     username_entry.grid(row=0, column=3)
     phone_label.grid(row=1, column=0)
     phone_entry.grid(row=1, column=1)
-    person_key_label.grid(row=1, column=2)
-    person_key_entry.grid(row=1, column=3)
+    self._person_key_label.grid(row=1, column=2)
+    self._person_key_entry.grid(row=1, column=3)
     act_with_book_label.grid(row=4, column=0)
     act_with_book_entry.grid(row=4, column=1)
 
