@@ -30,6 +30,7 @@ class Book:
             conn.sadd(author_elem, self._book_key)
         conn.sadd(isbn, self._book_key)
         conn.sadd(str(page_number), self._book_key)
+        conn.incr("BID", 1)
 
     def __del__(self):
         """Delete the book instance."""
@@ -52,7 +53,5 @@ class Book:
 
 
 if __name__ == "__main__":
-    book2 = Book("title2", "isbn3", ["a", "b"], 1)
-    book3 = Book("title3", "isbn2", ["a", "b"], 1)
-    del book2
-    print(conn.hgetall("book:2"))
+    book0 = Book("title2", "isbn2", ["a", "b"], 1)
+    book1 = Book("title3", "isbn3", ["a", "b"], 1)

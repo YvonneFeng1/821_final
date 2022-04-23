@@ -80,3 +80,46 @@ def del_book(book_key_entry):
     print(book_key, "deleted")
     book_key_entry.delete(0, "end")
     return
+
+
+def search_book(title_entry: ttk.Entry, author_entry: ttk.Entry, isbn_entry: ttk.Entry):
+    """Search book based on the given info."""
+    title = title_entry.get()
+    author = author_entry.get()
+    isbn = isbn_entry.get()
+    print("search for: " + ", ".join([title, author, isbn]))
+
+    title_set = conn.smembers(title)
+    author_set = conn.smembers(author)
+    isbn_set = conn.smembers(isbn)
+
+    book_keys_searched = set.union(title_set, author_set, isbn_set)
+    if title != "" and len(title_set) == 0:
+        book_keys_searched = set()
+    if author != "" and len(author_set) == 0:
+        book_keys_searched = set()
+    if isbn != "" and len(isbn_set) == 0:
+        book_keys_searched = set()
+    if len(title_set) != 0:
+        book_keys_searched = book_keys_searched.intersection(title_set)
+    if len(author_set) != 0:
+        book_keys_searched = book_keys_searched.intersection(author_set)
+    if len(isbn_set) != 0:
+        book_keys_searched = book_keys_searched.intersection(isbn_set)
+
+    if len(book_keys_searched) == 0:
+        print("such book does not exist in this system")
+    for book_key in book_keys_searched:
+        print(book_key, conn.hgetall(book_key))
+
+    clear_entries([title_entry, author_entry, isbn_entry])
+    return
+
+
+def sort_books(sort_by: str) -> None:
+    """Sort the books in the system by a field."""
+    print(f"sorting by {sort_by}")
+    sorted_books = conn.sort("books", by=f"*->{sort_by}", alpha=True)
+    for book in sorted_books:
+        print(book, conn.hgetall(book))
+    return

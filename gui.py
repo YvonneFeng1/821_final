@@ -1,9 +1,12 @@
+"""Library system GUI."""
+
 import tkinter
 from tkinter import ttk
 from redis import Redis
 
 
 def main():
+    """Build main."""
     # connect to redis
     conn = Redis()
     init_bid = 1 if conn.get("BID") is None else int(conn.get("BID").decode("utf-8"))
@@ -20,7 +23,8 @@ def main():
     conn.connection_pool.disconnect()
 
 
-def make_user_frame(root, conn):
+def make_user_frame(root):
+    """User frame."""
     person_frame = ttk.Frame(root, padding=20)
     person_frame.grid(row=1)
     # input entries
@@ -47,7 +51,8 @@ def make_user_frame(root, conn):
     act_with_book_entry.grid(row=4, column=1)
 
 
-def make_book_frame(root, conn):
+def make_book_frame(root):
+    """Book frame."""
     book_frame = ttk.Frame(root, padding=20)
     book_frame.grid(row=0)
     # input entries
