@@ -13,12 +13,12 @@ def main():
     root.title("Library System")
 
     make_book_frame(root)
-    make_user_frame(root)
+    make_person_frame(root)
     root.mainloop()
     conn.connection_pool.disconnect()
 
 
-def make_user_frame(root):
+def make_person_frame(root):
     """User frame."""
     person_frame = ttk.Frame(root, padding=20)
     person_frame.grid(row=1)
@@ -27,23 +27,37 @@ def make_user_frame(root):
     name_entry = ttk.Entry(person_frame, width=8)
     username_label = ttk.Label(person_frame, text="username")
     username_entry = ttk.Entry(person_frame, width=8)
-    phone_label = ttk.Label(person_frame, text="phone")
-    phone_entry = ttk.Entry(person_frame, width=8)
     person_key_label = ttk.Label(person_frame, text="person_key")
     person_key_entry = ttk.Entry(person_frame, width=8)
-    act_with_book_label = ttk.Label(person_frame, text="Enter the searched book key")
-    act_with_book_entry = ttk.Entry(person_frame, width=8)
 
     name_label.grid(row=0, column=0)
     name_entry.grid(row=0, column=1)
     username_label.grid(row=0, column=2)
     username_entry.grid(row=0, column=3)
-    phone_label.grid(row=1, column=0)
-    phone_entry.grid(row=1, column=1)
-    person_key_label.grid(row=1, column=2)
-    person_key_entry.grid(row=1, column=3)
-    act_with_book_label.grid(row=4, column=0)
-    act_with_book_entry.grid(row=4, column=1)
+    person_key_label.grid(row=0, column=4)
+    person_key_entry.grid(row=0, column=5)
+
+    # button
+    add_person_button = ttk.Button(person_frame, text="add person")
+    del_person_button = ttk.Button(person_frame, text="delete person")
+    edit_person_button = ttk.Button(person_frame, text="edit person")
+    search_person_button = ttk.Button(person_frame, text="search person")
+
+    add_person_button.grid(row=1, column=1)
+    del_person_button.grid(row=1, column=3)
+    edit_person_button.grid(row=1, column=5)
+    search_person_button.grid(row=2, column=3)
+
+    add_person_button["command"] = lambda: app_fun_person.add_person(
+        name_entry, username_entry
+    )
+    del_person_button["command"] = lambda: app_fun_person.del_person(person_key_entry)
+    edit_person_button["command"] = lambda: app_fun_person.edit_person(
+        name_entry, username_entry, person_key_entry
+    )
+    search_person_button["command"] = lambda: app_fun_person.search_person(
+        username_entry
+    )
 
 
 def make_book_frame(root):

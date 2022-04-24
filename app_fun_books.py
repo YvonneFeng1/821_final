@@ -37,10 +37,11 @@ def add_book(
     book = Book(
         title=title, isbn=isbn, authors=author_list, page_number=int(page_number)
     )
-
     # clear text in entries
     clear_entries([title_entry, author_entry, isbn_entry, page_number_entry])
     print(book.book_key, "added")
+    # clear cached book object
+    del book
     return
 
 
@@ -64,19 +65,10 @@ def del_book(book_key_entry):
             author_elem[1:-1], book_key
         )  # [1:-1] is used to strip out the quotation mark
     isbn = conn.hget(book_key, "isbn").decode("utf-8")
-    conn.srem(isbn, book_key)
+    conn.delete(isbn)
     page_number = conn.hget(book_key, "pageNumber").decode("utf-8")
     conn.srem(page_number, book_key)
     conn.srem("books_set", book_key)
-
-    # # remove the book from the borrower book set
-    # borrower_person_key = conn.hget(book_key, "borrower").decode("utf-8")
-    # print(borrower_person_key)
-    # if borrower_person_key != "none":
-    #     borrower_person_books_set_key = (
-    #         conn.hget(borrower_person_key, "username").decode("utf-8") + ":books"
-    #     )
-    #     conn.srem(borrower_person_books_set_key, book_key)
 
     conn.delete(book_key)
     print(book_key, "deleted")
@@ -107,7 +99,7 @@ def edit_book(
     conn.srem(prev_title, book_key)
     for prev_author_elem in prev_author_list:
         conn.srem(prev_author_elem, book_key)
-    conn.srem(prev_isbn, book_key)
+    conn.delete(prev_isbn)
     conn.srem(prev_page_number, book_key)
 
     title = title_entry.get()
@@ -145,7 +137,7 @@ def edit_book(
     conn.sadd(title, book_key)
     for author_elem in author_list:
         conn.sadd(author_elem, book_key)
-    conn.sadd(isbn, book_key)
+    conn.set(isbn, book_key)
     conn.sadd(page_number, book_key)
 
     # clear entries
@@ -156,37 +148,42 @@ def edit_book(
     return
 
 
-def search_book(title_entry: ttk.Entry, author_entry: ttk.Entry, isbn_entry: ttk.Entry):
+def search_book(
+    title_entry: ttk.Entry, author_entry: ttk.Entry, isbn_entry: ttk.Entry
+) -> None:
     """Search book based on the given info."""
     title = title_entry.get()
     author = author_entry.get()
     isbn = isbn_entry.get()
+    clear_entries([title_entry, author_entry, isbn_entry])
+
     print("search for: " + ", ".join([title, author, isbn]))
+
+    if isbn is not None and isbn != "":
+        book_key = conn.get(isbn)
+        if book_key is None:
+            print("no book with such isbn.")
+            return
+        print(book_key, conn.hgetall(book_key))
+        return
 
     title_set = conn.smembers(title)
     author_set = conn.smembers(author)
-    isbn_set = conn.smembers(isbn)
 
-    book_keys_searched = set.union(title_set, author_set, isbn_set)
+    book_keys_searched = set.union(title_set, author_set)
     if title != "" and len(title_set) == 0:
         book_keys_searched = set()
     if author != "" and len(author_set) == 0:
-        book_keys_searched = set()
-    if isbn != "" and len(isbn_set) == 0:
         book_keys_searched = set()
     if len(title_set) != 0:
         book_keys_searched = book_keys_searched.intersection(title_set)
     if len(author_set) != 0:
         book_keys_searched = book_keys_searched.intersection(author_set)
-    if len(isbn_set) != 0:
-        book_keys_searched = book_keys_searched.intersection(isbn_set)
-
     if len(book_keys_searched) == 0:
         print("such book does not exist in this system")
     for book_key in book_keys_searched:
         print(book_key, conn.hgetall(book_key))
 
-    clear_entries([title_entry, author_entry, isbn_entry])
     return
 
 

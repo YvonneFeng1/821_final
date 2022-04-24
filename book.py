@@ -6,14 +6,19 @@ class Book:
     """Book class."""
 
     def __init__(
-        self, title: str, isbn: str, authors: list[str], page_number: int
+        self,
+        title: str,
+        isbn: str,
+        authors: list[str],
+        page_number: int,
+        book_key: str | None = None,
     ) -> None:
         """Init a book object."""
-        bid = conn.get("BID")
-        if bid is None:
-            print("Cannot init")
-            return
-        self._book_key = "book:" + bid.decode("utf-8")
+        if book_key is None:
+            bid = conn.get("BID")
+            self._book_key = "book:" + bid.decode("utf-8")  # type: ignore
+        else:
+            self._book_key = book_key
 
         conn.hset(self._book_key, "title", title)
         conn.hset(self._book_key, "author", str(authors))
@@ -28,7 +33,7 @@ class Book:
         conn.sadd(title, self._book_key)
         for author_elem in authors:
             conn.sadd(author_elem, self._book_key)
-        conn.sadd(isbn, self._book_key)
+        conn.set(isbn, self._book_key)
         conn.sadd(str(page_number), self._book_key)
         conn.incr("BID", 1)
 
@@ -36,3 +41,32 @@ class Book:
     def book_key(self):
         """Getter of self._book_key."""
         return self._book_key
+
+    @property
+    def is_avaliable(self) -> bool:
+        """Getter of the status of isAvaliable."""
+        check = conn.hget(self._book_key, "isAvaliable")
+        return int(check) == 1  # type: ignore
+
+    @property
+    def isbn(self):
+        """Getter of isbn."""
+        return conn.hget(self._book_key, "isbn").decode("utf-8")  # type: ignore
+
+    def is_borrowed(self, borrower: str) -> None:
+        """Make the book be borrowed by someone."""
+        conn.hset(self._book_key, "isAvaliable", 0)
+        conn.hset(self._book_key, "borrower", borrower)
+
+
+def locate_book(isbn: str) -> Book:
+    """Locate the book by isbn in the database."""
+    book_key = conn.get(isbn).decode("utf-8")  # type: ignore
+    title = conn.hget(book_key, "title").decode("utf-8")  # type: ignore
+    author = conn.hget(book_key, "author").decode("utf-8")  # type: ignore
+    author_list = author[1:-1].split(
+        sep=", "
+    )  # [1:-1] is used to strip out the bracket
+    author_list = [elem[1:-1] for elem in author_list]
+    page_number = conn.hget(book_key, "pageNumber").decode("utf-8")  # type: ignore
+    return Book(title, isbn, author_list, int(page_number), book_key)
