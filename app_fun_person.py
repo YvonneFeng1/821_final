@@ -40,11 +40,11 @@ def del_person(person_key_entry: ttk.Entry):
     username = conn.hget(person_key, "username").decode("utf-8")  # type: ignore
     conn.delete(username, person_key)
 
-    # # return all the books and expire the person_book_set
-    # person_book_set_key = person_key + ":books"
-    # for book_key in conn.smembers(person_book_set_key):
-    #     conn.hset(book_key, "isAvailable", 1)
-    # conn.expire(person_book_set_key, 0)
+    # return all the books and expire the person_book_set
+    person_book_set_key = username + "_books"
+    for isbn in conn.smembers(person_book_set_key):
+        locate_book(isbn.decode("utf-8"))
+    conn.expire(person_book_set_key, 0)
 
     conn.delete(person_key)
     conn.srem("people_set", person_key)
@@ -111,19 +111,27 @@ def check_book(username_entry: ttk.Entry, isbn_entry: ttk.Entry) -> None:
     """Enable a person to check a book using username and isbn."""
     username = username_entry.get()
     isbn = isbn_entry.get()
+    clear_entries([username_entry, isbn_entry])
     person, book = action_checker(username, isbn)
     if person is None or book is None:
         return
     book.is_checked(borrower=username)
     person.checks(isbn)
+    print(f"{username} has checked {isbn}")
 
 
 def return_book(username_entry: ttk.Entry, isbn_entry: ttk.Entry) -> None:
     """Enable a person to return a book using username and isbn."""
     username = username_entry.get()
     isbn = isbn_entry.get()
+    clear_entries([username_entry, isbn_entry])
     person, book = action_checker(username, isbn)
     if person is None or book is None:
         return
-    person.returns(isbn)
+    try:
+        person.returns(isbn)
+    except ValueError as e:
+        print(e.args[0])
+        return
     book.is_returned()
+    print(f"{username} has returned {isbn}")

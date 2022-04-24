@@ -115,10 +115,10 @@ def make_book_frame(root):
     sort_label = ttk.Label(book_frame, text="sort method:")
     sort_label.grid(row=4, column=0)
     sort_method_grid_complex = [
-        ("title", 4, 1),
-        ("author", 4, 2),
-        ("isbn", 5, 1),
-        ("pageNumber", 5, 2),
+        ("by Title", "title", 4, 1),
+        ("by Author", "author", 4, 2),
+        ("by ISBN", "isbn", 5, 1),
+        ("by #Pages", "pageNumber", 5, 2),
     ]
     v = tkinter.StringVar()
 
@@ -127,9 +127,9 @@ def make_book_frame(root):
         sort_by = v.get()
         app_fun_book.sort_books(sort_by)
 
-    for (method, row, col) in sort_method_grid_complex:
+    for (label, method, row, col) in sort_method_grid_complex:
         radio_button = ttk.Radiobutton(
-            book_frame, text=method, value=method, variable=v, command=show_choice
+            book_frame, text=label, value=method, variable=v, command=show_choice
         )
         radio_button.grid(row=row, column=col)
 
@@ -155,5 +155,9 @@ def make_checkout_frame(root):
     check_button.grid(row=1, column=1)
     return_button.grid(row=1, column=3)
 
-    check_button["command"] = lambda: print("check..")
-    return_button["command"] = lambda: print("return..")
+    check_button["command"] = lambda: app_fun_person.check_book(
+        username_entry, isbn_entry
+    )
+    return_button["command"] = lambda: app_fun_person.return_book(
+        username_entry, isbn_entry
+    )

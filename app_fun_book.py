@@ -70,6 +70,10 @@ def del_book(book_key_entry):
     conn.srem(page_number, book_key)
     conn.srem("books_set", book_key)
 
+    # delete from the borrower's book set
+    borrower = conn.hget(self._book_key, "borrower").decode("utf-8")  # type: ignore
+    conn.srem(borrower + "_books", isbn)
+
     conn.delete(book_key)
     print(book_key, "deleted")
     book_key_entry.delete(0, "end")

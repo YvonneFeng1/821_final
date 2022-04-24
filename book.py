@@ -26,7 +26,7 @@ class Book:
         conn.hset(self._book_key, "isbn", isbn)
         conn.hset(self._book_key, "pageNumber", str(page_number))
         conn.hset(
-            self._book_key, "isAvailable", 1
+            self._book_key, "isAvaliable", 1
         )  # 1 means availability, 0 means not available
         conn.hset(self._book_key, "borrower", "none")
 
@@ -42,6 +42,12 @@ class Book:
     def book_key(self):
         """Getter of self._book_key."""
         return self._book_key
+
+    @property
+    def borrower(self) -> str | None:
+        """Getter of borrower."""
+        borrower = conn.hget(self._book_key, "borrower").decode("utf-8")  # type: ignore
+        return borrower if borrower != "none" else None
 
     @property
     def is_avaliable(self) -> bool:

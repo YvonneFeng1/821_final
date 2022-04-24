@@ -39,8 +39,7 @@ class Person:
         """Return a book."""
         _books_set_name = self.username + "_books"
         if not conn.smismember(_books_set_name, isbn)[0]:
-            print(f"username: {self.username} has not checked isbn {isbn}")
-            return
+            raise ValueError(f"username: {self.username} has not checked isbn {isbn}")
         conn.srem(_books_set_name, isbn)
         _books = conn.smembers(_books_set_name)
         if len(_books) == 0:
