@@ -2,7 +2,8 @@
 
 from db import conn
 from person import Person, locate_person
-from utils import clear_entries
+from book import locate_book
+from utils import clear_entries, action_checker
 from tkinter import ttk
 
 
@@ -104,3 +105,25 @@ def search_person(username_entry: ttk.Entry) -> None:
         return
     _key = person.person_key
     print(_key, conn.hgetall(_key))
+
+
+def check_book(username_entry: ttk.Entry, isbn_entry: ttk.Entry) -> None:
+    """Enable a person to check a book using username and isbn."""
+    username = username_entry.get()
+    isbn = isbn_entry.get()
+    person, book = action_checker(username, isbn)
+    if person is None or book is None:
+        return
+    book.is_checked(borrower=username)
+    person.checks(isbn)
+
+
+def return_book(username_entry: ttk.Entry, isbn_entry: ttk.Entry) -> None:
+    """Enable a person to return a book using username and isbn."""
+    username = username_entry.get()
+    isbn = isbn_entry.get()
+    person, book = action_checker(username, isbn)
+    if person is None or book is None:
+        return
+    person.returns(isbn)
+    book.is_returned()

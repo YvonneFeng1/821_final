@@ -1,5 +1,6 @@
 """Book class and methods."""
 from db import conn
+from person import locate_person
 
 
 class Book:
@@ -53,15 +54,22 @@ class Book:
         """Getter of isbn."""
         return conn.hget(self._book_key, "isbn").decode("utf-8")  # type: ignore
 
-    def is_borrowed(self, borrower: str) -> None:
+    def is_checked(self, borrower: str) -> None:
         """Make the book be borrowed by someone."""
         conn.hset(self._book_key, "isAvaliable", 0)
         conn.hset(self._book_key, "borrower", borrower)
 
+    def is_returned(self) -> None:
+        """Make the book be returned by someone."""
+        conn.hset(self._book_key, "isAvaliable", 1)
+        conn.hset(self._book_key, "borrower", "none")
+
 
 def locate_book(isbn: str) -> Book:
     """Locate the book by isbn in the database."""
-    book_key = conn.get(isbn).decode("utf-8")  # type: ignore
+    book_key = conn.get(isbn)
+    if book_key is None:
+        raise ValueError(f"isbn: {isbn} des not exist.")
     title = conn.hget(book_key, "title").decode("utf-8")  # type: ignore
     author = conn.hget(book_key, "author").decode("utf-8")  # type: ignore
     author_list = author[1:-1].split(
@@ -69,4 +77,4 @@ def locate_book(isbn: str) -> Book:
     )  # [1:-1] is used to strip out the bracket
     author_list = [elem[1:-1] for elem in author_list]
     page_number = conn.hget(book_key, "pageNumber").decode("utf-8")  # type: ignore
-    return Book(title, isbn, author_list, int(page_number), book_key)
+    return Book(title, isbn, author_list, int(page_number), book_key.decode("utf-8"))

@@ -2,7 +2,7 @@
 
 import tkinter
 from tkinter import ttk
-import app_fun_books
+import app_fun_book
 import app_fun_person
 from db import conn
 
@@ -14,6 +14,7 @@ def main():
 
     make_book_frame(root)
     make_person_frame(root)
+    make_checkout_frame(root)
     root.mainloop()
     conn.connection_pool.disconnect()
 
@@ -98,14 +99,14 @@ def make_book_frame(root):
     edit_book_button.grid(row=3, column=2)
     search_book_button.grid(row=3, column=3)
 
-    add_book_button["command"] = lambda: app_fun_books.add_book(
+    add_book_button["command"] = lambda: app_fun_book.add_book(
         title_entry, author_entry, isbn_entry, page_number_entry
     )
-    del_book_button["command"] = lambda: app_fun_books.del_book(book_key_entry)
-    edit_book_button["command"] = lambda: app_fun_books.edit_book(
+    del_book_button["command"] = lambda: app_fun_book.del_book(book_key_entry)
+    edit_book_button["command"] = lambda: app_fun_book.edit_book(
         title_entry, author_entry, isbn_entry, page_number_entry, book_key_entry
     )
-    search_book_button["command"] = lambda: app_fun_books.search_book(
+    search_book_button["command"] = lambda: app_fun_book.search_book(
         title_entry, author_entry, isbn_entry
     )
 
@@ -124,10 +125,35 @@ def make_book_frame(root):
     def show_choice() -> None:
         """Radio-button help command."""
         sort_by = v.get()
-        app_fun_books.sort_books(sort_by)
+        app_fun_book.sort_books(sort_by)
 
     for (method, row, col) in sort_method_grid_complex:
         radio_button = ttk.Radiobutton(
             book_frame, text=method, value=method, variable=v, command=show_choice
         )
         radio_button.grid(row=row, column=col)
+
+
+def make_checkout_frame(root):
+    """Checkout frame."""
+    checkout_frame = ttk.Frame(root, padding=20)
+    checkout_frame.grid(row=2)
+    # labels and entries
+    username_label = ttk.Label(checkout_frame, text="username:")
+    username_entry = ttk.Entry(checkout_frame, width=8)
+    isbn_label = ttk.Label(checkout_frame, text="ISBN:")
+    isbn_entry = ttk.Entry(checkout_frame, width=8)
+
+    username_label.grid(row=0, column=0)
+    username_entry.grid(row=0, column=1)
+    isbn_label.grid(row=0, column=2)
+    isbn_entry.grid(row=0, column=3)
+    # buttons
+    check_button = ttk.Button(checkout_frame, text="check book")
+    return_button = ttk.Button(checkout_frame, text="return book")
+
+    check_button.grid(row=1, column=1)
+    return_button.grid(row=1, column=3)
+
+    check_button["command"] = lambda: print("check..")
+    return_button["command"] = lambda: print("return..")

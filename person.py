@@ -1,6 +1,5 @@
 """Person class and method."""
 from db import conn
-from book import Book
 
 
 class Person:
@@ -31,6 +30,21 @@ class Person:
     def username(self):
         """Getter of username."""
         return conn.hget(self._person_key, "username").decode("utf-8")  # type: ignore
+
+    def checks(self, isbn: str) -> None:
+        """Check a book."""
+        conn.sadd(self.username + "_books", isbn)
+
+    def returns(self, isbn: str) -> None:
+        """Return a book."""
+        _books_set_name = self.username + "_books"
+        if not conn.smismember(_books_set_name, isbn)[0]:
+            print(f"username: {self.username} has not checked isbn {isbn}")
+            return
+        conn.srem(_books_set_name, isbn)
+        _books = conn.smembers(_books_set_name)
+        if len(_books) == 0:
+            conn.delete(_books_set_name)
 
 
 def locate_person(username: str) -> Person:
