@@ -45,6 +45,12 @@ class Person:
         if len(_books) == 0:
             conn.delete(_books_set_name)
 
+    @property
+    def books(self):
+        """Return a set of books checked by the person at the moment."""
+        book_set_name = self.username + "_books"
+        return conn.smembers(book_set_name)
+
 
 def locate_person(username: str) -> Person:
     """Locate the person by username in the database."""
